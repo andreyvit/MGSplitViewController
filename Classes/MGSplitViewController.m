@@ -83,6 +83,12 @@
 }
 
 
+- (float)splitPositionForInterfaceOrientation:(UIInterfaceOrientation)theOrientation
+{
+	return ((UIInterfaceOrientationIsLandscape(theOrientation) && _splitPositionLandscape > 0.0) ? _splitPositionLandscape : _splitPosition);
+}
+
+
 - (BOOL)shouldShowMaster
 {
 	return [self shouldShowMasterForInterfaceOrientation:self.interfaceOrientation];
@@ -130,6 +136,7 @@
 	_vertical = YES;
 	_masterBeforeDetail = YES;
 	_splitPosition = MG_DEFAULT_SPLIT_POSITION;
+    _splitPositionLandscape = 0.0;
 	CGRect divRect = self.view.bounds;
 	if ([self isVertical]) {
 		divRect.origin.y = _splitPosition;
@@ -270,6 +277,7 @@
 	UIViewController *controller;
 	UIView *theView;
 	BOOL shouldShowMaster = [self shouldShowMasterForInterfaceOrientation:theOrientation];
+    CGFloat splitPosition = [self splitPositionForInterfaceOrientation:theOrientation];
 	BOOL masterFirst = [self isMasterBeforeDetail];
 	if ([self isVertical]) {
 		// Master on left, detail on right (or vice versa).
@@ -277,10 +285,10 @@
 		if (masterFirst) {
 			if (!shouldShowMaster) {
 				// Move off-screen.
-				newFrame.origin.x -= (_splitPosition + _splitWidth);
+				newFrame.origin.x -= (splitPosition + _splitWidth);
 			}
 			
-			newFrame.size.width = _splitPosition;
+			newFrame.size.width = splitPosition;
 			masterRect = newFrame;
 			
 			newFrame.origin.x += newFrame.size.width;
@@ -294,10 +302,10 @@
 		} else {
 			if (!shouldShowMaster) {
 				// Move off-screen.
-				newFrame.size.width += (_splitPosition + _splitWidth);
+				newFrame.size.width += (splitPosition + _splitWidth);
 			}
 			
-			newFrame.size.width -= (_splitPosition + _splitWidth);
+			newFrame.size.width -= (splitPosition + _splitWidth);
 			detailRect = newFrame;
 			
 			newFrame.origin.x += newFrame.size.width;
@@ -305,7 +313,7 @@
 			dividerRect = newFrame;
 			
 			newFrame.origin.x += newFrame.size.width;
-			newFrame.size.width = _splitPosition;
+			newFrame.size.width = splitPosition;
 			masterRect = newFrame;
 		}
 		
@@ -350,10 +358,10 @@
 		if (masterFirst) {
 			if (!shouldShowMaster) {
 				// Move off-screen.
-				newFrame.origin.y -= (_splitPosition + _splitWidth);
+				newFrame.origin.y -= (splitPosition + _splitWidth);
 			}
 			
-			newFrame.size.height = _splitPosition;
+			newFrame.size.height = splitPosition;
 			masterRect = newFrame;
 			
 			newFrame.origin.y += newFrame.size.height;
@@ -367,10 +375,10 @@
 		} else {
 			if (!shouldShowMaster) {
 				// Move off-screen.
-				newFrame.size.height += (_splitPosition + _splitWidth);
+				newFrame.size.height += (splitPosition + _splitWidth);
 			}
 			
-			newFrame.size.height -= (_splitPosition + _splitWidth);
+			newFrame.size.height -= (splitPosition + _splitWidth);
 			detailRect = newFrame;
 			
 			newFrame.origin.y += newFrame.size.height;
@@ -378,7 +386,7 @@
 			dividerRect = newFrame;
 			
 			newFrame.origin.y += newFrame.size.height;
-			newFrame.size.height = _splitPosition;
+			newFrame.size.height = splitPosition;
 			masterRect = newFrame;
 		}
 		
@@ -452,14 +460,14 @@
 	if (_vertical) { // left/right split
 		cornersWidth = (radius * 2.0) + _splitWidth;
 		cornersHeight = radius;
-		x = ((shouldShowMaster) ? ((masterFirst) ? _splitPosition : width - (_splitPosition + _splitWidth)) : (0 - _splitWidth)) - radius;
+		x = ((shouldShowMaster) ? ((masterFirst) ? splitPosition : width - (splitPosition + _splitWidth)) : (0 - _splitWidth)) - radius;
 		y = 0;
 		leadingRect = CGRectMake(x, y, cornersWidth, cornersHeight); // top corners
 		trailingRect = CGRectMake(x, (height - cornersHeight), cornersWidth, cornersHeight); // bottom corners
 		
 	} else { // top/bottom split
 		x = 0;
-		y = ((shouldShowMaster) ? ((masterFirst) ? _splitPosition : height - (_splitPosition + _splitWidth)) : (0 - _splitWidth)) - radius;
+		y = ((shouldShowMaster) ? ((masterFirst) ? splitPosition : height - (splitPosition + _splitWidth)) : (0 - _splitWidth)) - radius;
 		cornersWidth = radius;
 		cornersHeight = (radius * 2.0) + _splitWidth;
 		leadingRect = CGRectMake(x, y, cornersWidth, cornersHeight); // left corners
@@ -871,6 +879,21 @@
 			[self layoutSubviews];
 		}
 	}
+}
+
+
+- (float)splitPositionLandscape
+{
+    return _splitPositionLandscape;
+}
+
+
+- (void)setSplitPositionLandscape:(float)posn
+{
+    _splitPositionLandscape = posn;
+    if ([self isLandscape] && [self isShowingMaster]) {
+        [self layoutSubviews];
+    }
 }
 
 

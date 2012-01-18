@@ -29,6 +29,7 @@ typedef enum _MGSplitViewDividerStyle {
 	MGSplitDividerView *_dividerView; // View that draws the divider between the master and detail views.
 	NSArray *_cornerViews; // Views to draw the inner rounded corners between master and detail views.
 	float _splitPosition;
+	float _splitPositionLandscape;
 	BOOL _reconfigurePopup;
 	MGSplitViewDividerStyle _dividerStyle; // Meta-setting which configures several aspects of appearance and behaviour.
 }
@@ -39,6 +40,7 @@ typedef enum _MGSplitViewDividerStyle {
 @property (nonatomic, assign, getter=isVertical) BOOL vertical; // if NO, split is horizontal, i.e. master above detail (default YES)
 @property (nonatomic, assign, getter=isMasterBeforeDetail) BOOL masterBeforeDetail; // if NO, master view is below/right of detail (default YES)
 @property (nonatomic, assign) float splitPosition; // starting position of split in pixels, relative to top/left (depending on .isVertical setting) if masterBeforeDetail is YES, else relative to bottom/right.
+@property (nonatomic, assign) float splitPositionLandscape; // starting position of split in pixels, only used in landscape orientation
 @property (nonatomic, assign) float splitWidth; // width of split in pixels.
 @property (nonatomic, assign) BOOL allowsDraggingDivider; // whether to let the user drag the divider to alter the split position (default NO).
 
