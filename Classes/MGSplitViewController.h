@@ -30,6 +30,7 @@ typedef enum _MGSplitViewDividerStyle {
 	NSArray *_cornerViews; // Views to draw the inner rounded corners between master and detail views.
 	float _splitPosition;
 	float _splitPositionLandscape;
+    BOOL _masterMaximized;
 	BOOL _reconfigurePopup;
 	MGSplitViewDividerStyle _dividerStyle; // Meta-setting which configures several aspects of appearance and behaviour.
 }
@@ -51,6 +52,9 @@ typedef enum _MGSplitViewDividerStyle {
 @property (nonatomic, assign) MGSplitViewDividerStyle dividerStyle; // style (and behaviour) of the divider between master and detail.
 
 @property (nonatomic, readonly, getter=isLandscape) BOOL landscape; // returns YES if this view controller is in either of the two Landscape orientations, else NO.
+
+@property (nonatomic, assign, getter=isMasterMaximized) BOOL masterMaximized;
+- (void)setMasterMaximized:(BOOL)masterMaximized animated:(BOOL)animated;
 
 // Actions
 - (IBAction)toggleSplitOrientation:(id)sender; // toggles split axis between vertical (left/right; default) and horizontal (top/bottom).

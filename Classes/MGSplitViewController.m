@@ -279,7 +279,22 @@
 	BOOL shouldShowMaster = [self shouldShowMasterForInterfaceOrientation:theOrientation];
     CGFloat splitPosition = [self splitPositionForInterfaceOrientation:theOrientation];
 	BOOL masterFirst = [self isMasterBeforeDetail];
-	if ([self isVertical]) {
+    if (_masterMaximized) {
+		// Position master.
+		controller = self.masterViewController;
+		if (controller && [controller isKindOfClass:[UIViewController class]])  {
+			theView = controller.view;
+			if (theView) {
+				theView.frame = newFrame;
+				if (!theView.superview) {
+					[controller viewWillAppear:NO];
+					[self.view addSubview:theView];
+					[controller viewDidAppear:NO];
+				}
+                [self.view bringSubviewToFront:theView];
+			}
+		}
+	} else if ([self isVertical]) {
 		// Master on left, detail on right (or vice versa).
 		CGRect masterRect, dividerRect, detailRect;
 		if (masterFirst) {
@@ -460,14 +475,20 @@
 	if (_vertical) { // left/right split
 		cornersWidth = (radius * 2.0) + _splitWidth;
 		cornersHeight = radius;
-		x = ((shouldShowMaster) ? ((masterFirst) ? splitPosition : width - (splitPosition + _splitWidth)) : (0 - _splitWidth)) - radius;
+        if (_masterMaximized)
+            x = width;
+        else
+            x = ((shouldShowMaster) ? ((masterFirst) ? splitPosition : width - (splitPosition + _splitWidth)) : (0 - _splitWidth)) - radius;
 		y = 0;
 		leadingRect = CGRectMake(x, y, cornersWidth, cornersHeight); // top corners
 		trailingRect = CGRectMake(x, (height - cornersHeight), cornersWidth, cornersHeight); // bottom corners
 		
 	} else { // top/bottom split
 		x = 0;
-		y = ((shouldShowMaster) ? ((masterFirst) ? splitPosition : height - (splitPosition + _splitWidth)) : (0 - _splitWidth)) - radius;
+        if (_masterMaximized)
+            y = height;
+        else
+            y = ((shouldShowMaster) ? ((masterFirst) ? splitPosition : height - (splitPosition + _splitWidth)) : (0 - _splitWidth)) - radius;
 		cornersWidth = radius;
 		cornersHeight = (radius * 2.0) + _splitWidth;
 		leadingRect = CGRectMake(x, y, cornersWidth, cornersHeight); // left corners
@@ -836,6 +857,34 @@
 		if ([self isShowingMaster]) {
 			[self layoutSubviews];
 		}
+	}
+}
+
+
+- (BOOL)isMasterMaximized
+{
+    return _masterMaximized;
+}
+
+
+- (void)setMasterMaximized:(BOOL)masterMaximized
+{
+    if (_masterMaximized != masterMaximized) {
+        _masterMaximized = masterMaximized;
+        [self layoutSubviews];
+    }
+}
+
+
+- (void)setMasterMaximized:(BOOL)masterMaximized animated:(BOOL)animate
+{
+	BOOL shouldAnimate = (animate && [self isShowingMaster]);
+	if (shouldAnimate) {
+		[UIView beginAnimations:@"MasterMaximized" context:nil];
+	}
+	[self setMasterMaximized:masterMaximized];
+	if (shouldAnimate) {
+		[UIView commitAnimations];
 	}
 }
 
